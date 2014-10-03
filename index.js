@@ -6,7 +6,7 @@ var ddos = function(params) {
     var _params = {}
     _params.maxcount = 30;
     _params.burst = 5;
-    _params.limit = _params.burst * 4;  
+    _params.limit = _params.burst * 4;
     _params.maxexpiry = 120;
     _params.checkinterval = 1;
     _params.errormessage = 'Error';
@@ -31,11 +31,11 @@ var ddos = function(params) {
         for (var i = 0; i < keys.length; i++) {
             var key = keys[i]
             table[key].expiry -= params.checkinterval;
-            if (table[key].expiry <= 0) 
+            if (table[key].expiry <= 0)
                 delete table[key]
         }
     }
-    var timer = setInterval(update,params.checkinterval*1000) 
+    var timer = setInterval(update,params.checkinterval*1000)
     this.stop = function() {
         if (timer) {
             //console.log("ddos: stopping", timer)
@@ -46,15 +46,16 @@ var ddos = function(params) {
         if (params.testmode) {
             console.log('ddos: handle: beginning:', table)
         }
-        var host = req.connection.remoteAddress + "#" + req.headers['user-agent']
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        var host = ip + "#" + req.headers['user-agent']
         if (!table[host])
             table[host] = { count : 1, expiry : 1 }
         else {
             table[host].count++
-            if (table[host].count > params.maxcount) 
+            if (table[host].count > params.maxcount)
                 table[host].count = params.maxcount
             if (table[host].count > params.burst) {
-                if (table[host].expiry < params.maxexpiry) 
+                if (table[host].expiry < params.maxexpiry)
                     table[host].expiry = Math.min(params.maxexpiry,table[host].expiry * 2)
             } else {
                 table[host].expiry = 1;
@@ -68,7 +69,7 @@ var ddos = function(params) {
                 res.writeHead(500);
                 res.end(params.errormessage);
             }
-        } else {         
+        } else {
             next()
         }
         if (params.testmode) {
