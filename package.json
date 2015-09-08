@@ -29,6 +29,8 @@
   },
   "dependencies": {
     "hashish": "0.0.4",
+    "nodemailer": "^1.4.0",
+    "nodemailer-smtp-transport": "^1.0.3",
     "response": "https://github.com/mikeal/response/archive/master.tar.gz"
   }
 }
